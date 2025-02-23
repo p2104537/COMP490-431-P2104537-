@@ -7,8 +7,18 @@ class RandomFractalGenerator {
     generate(type, params) {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
+        // 重置所有画布样式
+        this.ctx.shadowColor = 'transparent';
+        this.ctx.shadowBlur = 0;
+        this.ctx.lineWidth = 1;
+
         switch(type) {
             case 'Discharge':
+                // 为Discharge设置特殊的发光效果
+                this.ctx.strokeStyle = '#00FFFF';
+                this.ctx.lineWidth = 2;
+                this.ctx.shadowColor = '#00FFFF';
+                this.ctx.shadowBlur = 20;
                 this.generateDischarge(params);
                 break;
             case 'Mountain Range':
@@ -79,7 +89,14 @@ class RandomFractalGenerator {
 
         this.ctx.beginPath();
         this.ctx.moveTo(0, this.canvas.height);
-        points.forEach(p => this.ctx.lineTo(p.x, p.y * heightScale));
+        
+        points.forEach(p => {
+            // 调整基准点和缩放方式
+            const baseHeight = this.canvas.height * 0.5; // 基准线在画布中间
+            const heightOffset = (baseHeight - p.y); // 计算与基准线的偏移
+            const scaledY = baseHeight - (heightOffset * heightScale); // 应用缩放
+            this.ctx.lineTo(p.x, scaledY);
+        });
         this.ctx.lineTo(this.canvas.width, this.canvas.height);
         this.ctx.closePath();
 
@@ -100,12 +117,12 @@ class RandomFractalGenerator {
             const next = points[i+1].y;
             
             const avg = (prev + next) / 2;
-            const displacement = (Math.random() - 0.5) * roughness * 200;
+            const displacement = (Math.random() - 0.5) * roughness * 400;
             points[i].y = avg + displacement;
             
             // 添加二次位移，使地形更自然
             if(i > 1 && i < len - 2) {
-                const secondaryDisp = (Math.random() - 0.5) * roughness * 100;
+                const secondaryDisp = (Math.random() - 0.5) * roughness * 200;
                 points[i].y += secondaryDisp * Math.sin(i / len * Math.PI);
             }
         }
@@ -117,7 +134,7 @@ class RandomFractalGenerator {
         for(let x = 0; x <= this.canvas.width; x += step) {
             points.push({
                 x: x,
-                y: this.canvas.height/2
+                y: this.canvas.height*0.4
             });
         }
         return points;

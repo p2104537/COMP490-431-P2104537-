@@ -111,3 +111,40 @@ canvas {
 .sierpinski-params, .barnsley-params, .carpet-params {
     display: none;
 }
+
+/* 基础响应式布局 */
+@media screen and (max-width: 1024px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .control-panel {
+        width: 100%;
+    }
+    
+    .canvas-container {
+        width: 100%;
+        aspect-ratio: 1;  /* 保持画布为正方形 */
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .method-selector {
+        flex-direction: column;
+    }
+    
+    .method-btn {
+        width: 100%;
+    }
+}
+
+/* 确保canvas始终保持正方形且适应容器 */
+canvas {
+    max-width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+}

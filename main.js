@@ -1,4 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // 添加这个resize处理函数
+    function handleResize() {
+        const canvas = document.getElementById('fractalCanvas');
+        const container = canvas.parentElement;
+        const containerWidth = container.clientWidth;
+        
+        // 保持画布为正方形
+        canvas.width = containerWidth;
+        canvas.height = containerWidth;
+    }
+
+    // 添加resize事件监听
+    window.addEventListener('resize', handleResize);
+    
+    // 初始调用一次
+    handleResize();
+
     const canvas = document.getElementById('fractalCanvas');
     const ifsGen = new IFSGenerator(canvas);
     const lsysGen = new LSystemGenerator(canvas);
