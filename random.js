@@ -8,44 +8,71 @@ class RandomFractalGenerator {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
         switch(type) {
-            case 'mountain':
-                this.generateMountain(params);
+            case 'Discharge':
+                this.generateDischarge(params);
                 break;
-            case 'landscape':
-                this.generateLandscape(params);
+            case 'Mountain Range':
+                this.generateMountainRange(params);
                 break;
         }
     }
 
-    generateMountain(params) {
+    generateDischarge(params) {
         const {roughness, detailLevel, heightScale, frequency} = params;
-        const points = this.generateBasePoints(detailLevel);
-        
-        // 山脉特征：尖锐的峰值，陡峭的坡度
-        for(let i = 0; i < frequency; i++) {
-            this.midpointDisplacement(points, roughness * 1.5, true);
-        }
+        // 设置基本样式
+        this.ctx.strokeStyle = '#00FFFF';
+        this.ctx.lineWidth = 2;
+        this.ctx.shadowColor = '#00FFFF';
+        this.ctx.shadowBlur = 20;
 
-        // 绘制带渐变的山脉
+        // 从顶部开始，在顶部随机选择几个起点
+        const numStartPoints = 2 + Math.floor(Math.random() * 2); // 2-3个起点
+        
+        for(let i = 0; i < numStartPoints; i++) {
+            // 在画布顶部1/3区域随机选择起点
+            const startX = this.canvas.width * (0.3 + Math.random() * 0.4);
+            const startY = 0;
+            
+            // 向下生成闪电，角度在正下方附近浮动
+            const baseAngle = Math.PI/2; // 90度，正下方
+            const startAngle = baseAngle + (Math.random() - 0.5) * 0.5; // 小范围随机偏移
+            
+            this.drawLightning(startX, startY, startAngle, heightScale * 100, roughness, frequency);
+        }
+    }
+
+    drawLightning(x, y, angle, length, roughness, branchCount, depth = 0) {
+        if (depth > branchCount) return;
+
+        const endX = x + Math.cos(angle) * length;
+        const endY = y + Math.sin(angle) * length;
+
         this.ctx.beginPath();
-        this.ctx.moveTo(0, this.canvas.height);
-        points.forEach(p => this.ctx.lineTo(p.x, p.y * heightScale));
-        this.ctx.lineTo(this.canvas.width, this.canvas.height);
-        this.ctx.closePath();
+        this.ctx.moveTo(x, y);
+        this.ctx.lineTo(endX, endY);
+        this.ctx.stroke();
 
-        const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
-        gradient.addColorStop(0, '#4A4A4A');
-        gradient.addColorStop(1, '#8B8B8B');
-        
-        this.ctx.fillStyle = gradient;
-        this.ctx.fill();
+        // 生成分支，主要向下延伸
+        if (depth < branchCount - 1) {
+            const numBranches = 1 + Math.floor(Math.random() * 2);
+            for (let i = 0; i < numBranches; i++) {
+                // 确保新分支主要向下延伸
+                const branchAngle = angle + (Math.random() - 0.5) * roughness;
+                // 分支长度逐渐减小
+                const branchLength = length * (0.5 + Math.random() * 0.3);
+                
+                // 只有当分支角度主要向下时才绘制
+                if (branchAngle > 0 && branchAngle < Math.PI) {
+                    this.drawLightning(endX, endY, branchAngle, branchLength, roughness, branchCount, depth + 1);
+                }
+            }
+        }
     }
 
-    generateLandscape(params) {
+    generateMountainRange(params) {
         const {roughness, detailLevel, heightScale, frequency} = params;
         const points = this.generateBasePoints(detailLevel);
         
-        // 使用不同的算法生成更平缓的地形
         for(let i = 0; i < frequency; i++) {
             this.diamondSquare(points, roughness * 0.5);
         }
