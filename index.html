@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web-Based Fractal Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Web-Based Fractal Generator</h1>
+        
+        <!-- 分形类型选择 -->
+        <div class="method-selector">
+            <button class="method-btn active" data-method="ifs">IFS Fractals</button>
+            <button class="method-btn" data-method="lsystem">L-System Plants</button>
+            <button class="method-btn" data-method="random">Random Fractals</button>
+        </div>
+
+        <div class="main-content">
+            <!-- 控制面板 -->
+            <div class="control-panel">
+                <!-- IFS 控制面板 -->
+                <div class="method-panel" id="ifs-panel">
+                    <h3>IFS Parameters</h3>
+                    <div class="param-group">
+                        <label>Fractal Type:</label>
+                        <select id="ifs-type">
+                            <option value="sierpinski">Sierpinski Triangle</option>
+                            <option value="barnsley">Barnsley Fern</option>
+                            <option value="carpet">Sierpinski Carpet</option>
+                        </select>
+                    </div>
+    
+                    <div class="param-group">
+                        <!-- 通用参数 -->
+                        <div class="param-group">
+                            <label>Scale:
+                                <input type="range" id="ifs-scale" min="0.5" max="2" step="0.1" value="1">
+                                <span class="value">1</span>
+                            </label>
+                        </div>
+                
+                        <!-- Sierpinski Triangle参数 -->
+                        <div class="param-group sierpinski-params">
+                            <label>Point Size:
+                                <input type="range" id="sierpinski-point-size" min="0.5" max="2" step="0.1" value="1">
+                                <span class="value">1</span>
+                            </label>
+                            <label>Iterations:
+                                <input type="range" id="sierpinski-iterations" min="5000" max="50000" value="10000">
+                                <span class="value">10000</span>
+                            </label>
+                        </div>
+
+                        <!-- Barnsley Fern参数 -->
+                        <div class="param-group barnsley-params">
+                            <label>Point Size:
+                                <input type="range" id="barnsley-point-size" min="0.5" max="2" step="0.1" value="1">
+                                <span class="value">1</span>
+                            </label>
+                            <label>Iterations:
+                                <input type="range" id="barnsley-iterations" min="5000" max="50000" value="10000">
+                                <span class="value">10000</span>
+                            </label>
+                        </div>
+                
+                        <!-- Sierpinski Carpet参数 -->
+                        <div class="param-group carpet-params">
+                            <label>Recursion Depth:
+                                <input type="range" id="carpet-depth" min="1" max="6" step="1" value="4">
+                                <span class="value">4</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <!-- L-System 控制面板 -->
+                <div class="method-panel hidden" id="lsystem-panel">
+                    <h3>L-System Parameters</h3>
+                    <select id="plant-type">
+                        <option value="Fractal Tree">Fractal Tree</option>
+                        <option value="Koch Snowflake">Koch Snowflake</option>
+                        <option value="Fractal Plant">Fractal Plant</option>
+                    </select>
+                
+                    <div class="param-group">
+                        <label>Branch Length:
+                            <input type="range" id="branch-length" min="1" max="100" value="50">
+                            <span class="value">50</span>
+                        </label>
+                        <label>Branch Angle:
+                            <input type="range" id="branch-angle" min="0" max="180" value="25">
+                            <span class="value">25</span>
+                        </label>
+                        <label>Branch Width:
+                            <input type="range" id="branch-width" min="1" max="10" value="1">
+                            <span class="value">1</span>
+                        </label>
+                        <label>Growth Level:
+                            <input type="range" id="growth-level" min="0" max="12" value="5">
+                            <span class="value">5</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Random Fractal 控制面板 -->
+                <div class="method-panel hidden" id="random-panel">
+                    <h3>Random Fractal Parameters</h3>
+                    <select id="random-type">
+                        <option value="Discharge">Discharge</option>
+                        <option value="Mountain Range">Mountain Range</option>
+                    </select>
+                
+                    <div class="param-group">
+                        <label>Roughness:
+                            <input type="range" id="roughness" min="0.1" max="1" step="0.1" value="0.5">
+                            <span class="value">0.5</span>
+                        </label>
+                        <label>Detail Level:
+                            <input type="range" id="detail-level" min="5" max="10" value="7">
+                            <span class="value">7</span>
+                        </label>
+                        <label>Height Scale:
+                            <input type="range" id="height-scale" min="0.1" max="2" step="0.1" value="1">
+                            <span class="value">1</span>
+                        </label>
+                        <label>Frequency:
+                            <input type="range" id="frequency" min="1" max="10" value="5">
+                            <span class="value">5</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button id="generate-btn">Generate Fractal</button>
+                <button id="reset-btn">Reset</button>
+            </div>
+
+            <!-- 绘图区域 -->
+            <div class="canvas-container">
+                <canvas id="fractalCanvas" width="600" height="600"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改后的脚本引用路径 -->
+    <script src="IFS.js"></script>
+    <script src="LSystem.js"></script>
+    <script src="random.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
