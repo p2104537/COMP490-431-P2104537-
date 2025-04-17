@@ -11,6 +11,8 @@ class LSystemGenerator {
         const {branchLength, branchAngle, branchWidth, growthLevel} = params;
 
         //const scale = 1 / (growthLevel * 0.3 + 1);// 根据迭代次数计算缩放比例
+        // 标记当前分形类型
+        this.currentPlantType = type;
 
         switch(type) {
             case 'Fractal Tree':
@@ -28,11 +30,14 @@ class LSystemGenerator {
                 };
                 this.ctx.strokeStyle = '#2D4A1D'; // 深绿色
                 break;
-            case 'Fractal Plant':
-                axiom = 'A';
+            case 'Dragon Curve':
+                axiom = 'AX';
                 rules = {
-                    'A': 'B-[[A]+A]+B[+BA]-A',
-                    'B': 'BB'
+                    'X': 'X-YA-',
+                    'Y': '+AX+Y',
+                    'A': 'A'
+                    //'A': 'B-[[A]+A]+B[+BA]-A',
+                    //'B': 'BB'
                 };
                 this.ctx.strokeStyle = '#8B4513'; // 棕色
                 break;
@@ -40,16 +45,17 @@ class LSystemGenerator {
 
         let result = this.applyRules(axiom, rules, growthLevel);
 
-         // 计算合适的缩放比例
-         const bounds = this.calculateBounds(result, params);
-         const scale = this.calculateScale(bounds);
-         
-         // 使用计算出的缩放比例绘制
-        this.drawPlant(result, {
-            branchAngle: branchAngle,
-            branchWidth: branchWidth,
-            branchLength: branchLength * scale   // 缩放分支长度
-        });
+        this.currentPlantType = type; 
+    
+        // 计算合适的缩放比例（Dragon Curve不需要整体缩放）
+        if (type !== 'Dragon Curve') {
+            const bounds = this.calculateBounds(result, params);
+            const scale = this.calculateScale(bounds);
+            params.branchLength *= scale;
+        }
+
+        // 直接绘制（不再统一应用缩放）
+        this.drawPlant(result, params);
     }
 
     calculateBounds(commands, params) {
@@ -90,7 +96,18 @@ class LSystemGenerator {
                     angle = state.angle;
                     currentLength = state.length;
                     break;
+                case 'X':
+                case 'Y':
+                    break;
             }
+        }
+
+        // 对Dragon Curve强制返回固定边界
+        if (this.currentPlantType === 'Dragon Curve') {
+            return {
+                centerX: this.canvas.width/2, // 强制中心点
+                centerY: this.canvas.height/2
+            };
         }
 
         return {
@@ -124,18 +141,23 @@ class LSystemGenerator {
         let currentLength = branchLength;
         const stack = [];
 
-        // 先计算边界
-        const bounds = this.calculateBounds(commands, params);
         
         this.ctx.save();
 
-        this.ctx.translate(
-            this.canvas.width/2 - bounds.centerX,
-            this.canvas.height/2 - bounds.centerY
-        );
+        // 根据分形类型设置初始位置
+        if (this.currentPlantType === 'Dragon Curve') {
+            this.ctx.translate(this.canvas.width/2, this.canvas.height/2);
+            this.ctx.rotate(-90 * Math.PI / 180); // 初始旋转匹配经典形态
+        } else {
+            // 其他分形保持居中逻辑
+            // 先计算边界
+            const bounds = this.calculateBounds(commands, params);
+            this.ctx.translate(
+                this.canvas.width/2 - bounds.centerX,
+                this.canvas.height/2 - bounds.centerY
+            );
+        }
 
-        // 将起点移到画布底部中心
-        //this.ctx.translate(this.canvas.width/2, this.canvas.height * 1);
         this.ctx.lineWidth = branchWidth;
 
         for(let cmd of commands) {

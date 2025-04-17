@@ -94,17 +94,40 @@ document.addEventListener('DOMContentLoaded', () => {
         if(currentMethod === 'lsystem') {
             const branchAngle = document.getElementById('branch-angle');
             const plantType = document.getElementById('plant-type').value;
-            
+
             const angleMap = {
                 'Fractal Tree': 30,
                 'Koch Snowflake': 60,
-                'Fractal Plant': 25
+                'Dragon Curve': 90
             };
             
             branchAngle.value = angleMap[plantType];
             branchAngle.parentElement.querySelector('.value').textContent = angleMap[plantType];
         }
     });
+
+    document.getElementById('plant-type').addEventListener('change', function() {
+        const growthLevelInput = document.getElementById('growth-level');
+        const valueSpan = growthLevelInput.nextElementSibling;
+        
+        switch(this.value) {
+            case 'Fractal Tree':
+                growthLevelInput.max = 12;
+                break;
+            case 'Koch Snowflake':
+                growthLevelInput.max = 8;
+                // 如果当前值超过新上限则重置
+                if(growthLevelInput.value > 8) {
+                    growthLevelInput.value = 8;
+                    valueSpan.textContent = 8;
+                }
+                break;
+            case 'Dragon Curve':
+                growthLevelInput.max = 20;
+                break;
+        }
+    });
+    
 
     // 生成按钮事件
     document.getElementById('generate-btn').addEventListener('click', () => {
